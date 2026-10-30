@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="bn" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Krishok-Bondhu | Autonomous Spatial Pathology & Multi-Constraint Field Agent</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+            },
+            meta: {
+              blue: '#0668E1',
+              dark: '#0B132B'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', 'Hind Siliguri', sans-serif;
+      background-color: #080d1a;
+      color: #f1f5f9;
+    }
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- TOP APP HEADER -->
+  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center shadow-lg shadow-brand-500/20 text-white font-bold text-xl">
+          🌾
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <h1 class="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+              Krishok-Bondhu <span class="text-sm font-medium text-emerald-400 bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-800/60">কৃষক-বন্ধু</span>
+            </h1>
+            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-blue-950 text-blue-400 border border-blue-800">
+              Argon 11
+            </span>
+          </div>
+          <p class="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+            <i data-lucide="cpu" class="w-3.5 h-3.5 text-blue-400"></i> Powered by Meta SAM 3.1 &bull; Muse Spark 1.3 &bull; MMS-TTS-BEN
+          </p>
+        </div>
+      </div>
+
+      <!-- Live GPS & Farm Badge -->
+      <div class="flex items-center gap-3 text-xs">
+        <div class="glass-card px-3 py-1.5 rounded-lg flex items-center gap-2 text-slate-300">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-red-400"></i>
+          <span>আত্রাই, নওগাঁ (24.6133° N, 88.9515° E)</span>
+        </div>
+        <div class="glass-card px-3 py-1.5 rounded-lg flex items-center gap-2 text-slate-300">
+          <i data-lucide="sprout" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>ব্রি-ধান২৯ (৩ বিঘা)</span>
+        </div>
+        <div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-medium">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>স্বায়ত্তশাসিত এজেন্ট সক্রিয়</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- NAVIGATION TABS -->
+  <div class="border-b border-slate-800 bg-slate-900/40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 flex space-x-1 sm:space-x-4 overflow-x-auto py-2">
+      <button onclick="switchTab('vision')" id="tab-vision" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 bg-brand-600 text-white shadow-md shadow-brand-600/30 transition">
+        <i data-lucide="scan-eye" class="w-4 h-4"></i> ১. স্পেশিয়াল ভিশন ও সেফটি লক
+      </button>
+      <button onclick="switchTab('agent')" id="tab-agent" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+        <i data-lucide="brain-circuit" class="w-4 h-4"></i> ২. মাল্টি-কনস্ট্রেইন্ট এজেন্ট (Muse Spark)
+      </button>
+      <button onclick="switchTab('voice')" id="tab-voice" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+        <i data-lucide="mic" class="w-4 h-4"></i> ৩. বাংলা ভয়েস ও টেলিগ্রাম এলার্ট
+      </button>
+      <button onclick="switchTab('ecosystem')" id="tab-ecosystem" class="tab-btn px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition">
+        <i data-lucide="globe" class="w-4 h-4"></i> ৪. জাতীয় কৃষি ইকোসিস্টেম হাব
+      </button>
+    </div>
+  </div>
+
+  <!-- MAIN VIEWPORT -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-6 flex-1 w-full">
+
+    <!-- ========================================================================= -->
+    <!-- TAB 1: 3-STAGE SPATIAL VISION & SAFETY LOCK (<85%) -->
+    <!-- ========================================================================= -->
+    <section id="panel-vision" class="space-y-6">
+      
+      <!-- Top Test Sample Quick Actions -->
+      <div class="glass-card p-4 rounded-2xl flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">টেস্ট স্যাম্পল নির্বাচন করুন:</span>
+          <div class="flex flex-wrap gap-2">
+            <button onclick="loadSample('rice_blast_leaf.jpg')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-rose-500/20 text-rose-300 border border-rose-500/40 hover:bg-rose-500/30 transition flex items-center gap-1.5">
+              <span>🌾 রাইস ব্লাস্ট (Grade 5 NE)</span>
+            </button>
+            <button onclick="loadSample('brown_spot_leaf.jpg')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition flex items-center gap-1.5">
+              <span>🍂 ব্রাউন স্পট (Grade 3)</span>
+            </button>
+            <button onclick="loadSample('bacterial_blight_leaf.jpg')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 hover:bg-yellow-500/30 transition flex items-center gap-1.5">
+              <span>🌱 পাতা পোড়া (BLB)</span>
+            </button>
+            <button onclick="loadSample('healthy_leaf.jpg')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition flex items-center gap-1.5">
+              <span>✨ সুস্থ পাতা (Healthy)</span>
+            </button>
+            <button onclick="loadSample('blurry_leaf.jpg')" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/40 hover:bg-purple-500/30 transition flex items-center gap-1.5 animate-pulse">
+              <span>⚠️ ঘোলা ছবি (<85% Safety Lock)</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <label class="cursor-pointer px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 hover:bg-slate-700 transition flex items-center gap-1.5 border border-slate-700">
+            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+            <span>নিজস্ব ছবি আপলোড</span>
+            <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+          </label>
+        </div>
+      </div>
+
+      <!-- Safety Lock Warning Banner (Shown when confidence < 85%) -->
+      <div id="safety-lock-banner" class="hidden p-4 rounded-2xl bg-rose-950/80 border-2 border-rose-500/80 shadow-xl shadow-rose-950/50">
+        <div class="flex items-start gap-3">
+          <div class="p-2 rounded-xl bg-rose-600 text-white font-black text-xl flex-shrink-0">
+            <i data-lucide="shield-alert" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-rose-200 flex items-center gap-2">
+              <span>AUTOMATIC SAFETY LOCK ENGAGED: রাসায়নিক বিষ প্রয়োগের হিসাব বন্ধ করা হয়েছে!</span>
+              <span class="text-xs bg-rose-500 text-white font-mono px-2 py-0.5 rounded">Confidence: 58.4% &lt; 85% Threshold</span>
+            </h4>
+            <p class="text-xs text-rose-300 mt-1 leading-relaxed">
+              ছবিটি অতিরিক্ত অন্ধকার/ঘোলা হওয়ায় SAM 3.1 এবং CIE-LAB ফিল্টারে কনফিডেন্স লেভেল ৮৫%-এর নিচে নেমে গেছে। ভুল প্রেসক্রিপশনে ধান পোড়া ও পরিবেশ ক্ষতি রোধে স্বয়ংক্রিয় সেফটি লক কার্যকর করা হয়েছে। ছবিটি সরাসরি <strong class="underline">উপজেলা কৃষি কর্মকর্তার ভেরিফিকেশন কিউতে (Ticket #104)</strong> পাঠানো হয়েছে।
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vision Core 2-Column Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Spatial SAM 3.1 Augmented Canvas -->
+        <div class="lg:col-span-7 glass-card p-5 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="layers" class="w-4 h-4 text-emerald-400"></i>
+                <span>Meta SAM 3.1 + CIE-LAB কালার স্পেস অগমেন্টেড ওভারলে</span>
+              </h3>
+              <span id="scan-badge" class="px-2.5 py-1 rounded-md text-xs font-semibold bg-emerald-950 border border-emerald-800 text-emerald-300">
+                Rice Blast | SES Grade 5
+              </span>
+            </div>
+
+            <div class="relative w-full aspect-[4/3] bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center">
+              <img id="leaf-display-img" src="/assets/sample_leaves/rice_blast_leaf.jpg" alt="Leaf Visualizer" class="w-full h-full object-contain">
+              <div id="vision-loading" class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+                <div class="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-xs font-medium text-emerald-300">SAM 3.1 লিফ ও লেসন মাস্ক প্রসেস হচ্ছে...</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quadrant Distribution Meter -->
+          <div class="mt-4 pt-4 border-t border-slate-800">
+            <div class="text-xs font-semibold text-slate-300 mb-2 flex items-center justify-between">
+              <span>পাতার ৪টি কোয়ারড্র্যান্টে রোগের বিস্তৃতি (Spatial Quadrants):</span>
+              <span id="hotspot-label" class="text-amber-400 font-bold">Hotspot: North-East (৬৪.২%)</span>
+            </div>
+            <div class="grid grid-cols-4 gap-2 text-center text-xs">
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="text-slate-400 font-medium">NW</div>
+                <div id="quad-nw" class="font-bold text-slate-200 mt-1">৮.৪%</div>
+              </div>
+              <div class="p-2 rounded-lg bg-amber-950/40 border border-amber-800/80 text-amber-200">
+                <div class="font-bold">NE (হটস্পট)</div>
+                <div id="quad-ne" class="font-black text-amber-400 mt-1">৬৪.২%</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="text-slate-400 font-medium">SW</div>
+                <div id="quad-sw" class="font-bold text-slate-200 mt-1">১২.১%</div>
+              </div>
+              <div class="p-2 rounded-lg bg-slate-900 border border-slate-800">
+                <div class="text-slate-400 font-medium">SE</div>
+                <div id="quad-se" class="font-bold text-slate-200 mt-1">১৫.৩%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: IRRI SES (0-9) & Micro-Dosage Engine -->
+        <div class="lg:col-span-5 flex flex-col gap-5">
+          
+          <!-- Pathology Telemetry Card -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-4">
+              <i data-lucide="activity" class="w-4 h-4 text-blue-400"></i>
+              <span>IRRI SES স্ট্যান্ডার্ড ও রোগের পরিমাপ</span>
+            </h3>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-xs text-slate-400">Diseased Leaf Area (DLA):</span>
+                <div id="stat-dla" class="text-2xl font-black text-emerald-400 mt-0.5">১৮.৪%</div>
+                <span class="text-[10px] text-slate-400">(lesion_pixels / leaf_pixels)</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-xs text-slate-400">IRRI SES স্কেল:</span>
+                <div id="stat-grade" class="text-2xl font-black text-amber-400 mt-0.5">Grade 5</div>
+                <span class="text-[10px] text-slate-400">ইকোনমিক থ্রেশহোল্ড (ETL)</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-xs text-slate-400">মডেল কনফিডেন্স:</span>
+                <div id="stat-conf" class="text-xl font-bold text-blue-400 mt-0.5">৯২.৪%</div>
+                <span class="text-[10px] text-slate-400">থ্রেশহোল্ড: ৮৫.০%</span>
+              </div>
+              <div class="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <span class="text-xs text-slate-400">SAM 3.1 IoU স্কোর:</span>
+                <div id="stat-iou" class="text-xl font-bold text-purple-400 mt-0.5">০.৮৮</div>
+                <span class="text-[10px] text-slate-400">সেগমেন্টেশন কোয়ালিটি</span>
+              </div>
+            </div>
+
+            <!-- Micro-Dosage & Savings Comparison -->
+            <div class="p-4 rounded-xl bg-gradient-to-br from-emerald-950/60 to-slate-900 border border-emerald-800/60">
+              <div class="flex items-center justify-between text-xs mb-3">
+                <span class="font-bold text-emerald-300">BRRI ভ্যালিডেটেড প্রেসক্রিপশন:</span>
+                <span id="stat-action" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500 text-slate-950">স্পট-স্প্রে জোন</span>
+              </div>
+              
+              <div class="space-y-2 text-xs">
+                <div class="flex justify-between items-center py-1 border-b border-slate-800">
+                  <span class="text-slate-400">প্রচলিত পাইকারি স্প্রে (৩ বিঘা):</span>
+                  <span class="text-slate-300 font-mono">২০১.০ গ্রাম</span>
+                </div>
+                <div class="flex justify-between items-center py-1 border-b border-slate-800">
+                  <span class="text-emerald-400 font-semibold">কৃষক-বন্ধু স্পট-স্প্রে মাত্রা:</span>
+                  <span id="stat-dose" class="text-emerald-300 font-mono font-bold text-sm">২৮.০ গ্রাম (NE কোণা)</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-slate-400">রাসায়নিক সাশ্রয় (Chemical Saved):</span>
+                  <span id="stat-saved-pct" class="text-emerald-400 font-bold font-mono">৭৯.৫% সাশ্রয়</span>
+                </div>
+                <div class="flex justify-between items-center py-1">
+                  <span class="text-slate-400">খরচ সাশ্রয় (BDT):</span>
+                  <span id="stat-saved-bdt" class="text-amber-400 font-bold font-mono">৳৬০৫.৫০ টাকা</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Agronomic Advice in Bengali -->
+            <div class="mt-4 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+              <div class="font-bold text-slate-300 mb-1 flex items-center gap-1.5">
+                <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                <span>কৃষি বিজ্ঞান পরামর্শ (বাংলা):</span>
+              </div>
+              <p id="stat-advisory" class="text-slate-300 leading-relaxed">
+                আক্রান্ত এলাকা ১৮.৪% (IRRI গ্রেড ৫)। পুরো ৩ বিঘায় বিষ না দিয়ে শুধুমাত্র উত্তর-পূর্ব কোণায় ২৮ গ্রাম ট্রাইসাইক্লাজোল স্পট-স্প্রে করুন।
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: MULTI-CONSTRAINT AGENT & LIVE WEATHER REASONING -->
+    <!-- ========================================================================= -->
+    <section id="panel-agent" class="hidden space-y-6">
+
+      <!-- Action Trigger Header -->
+      <div class="glass-card p-5 rounded-2xl flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <i data-lucide="cpu" class="w-5 h-5 text-blue-400"></i>
+            <span>Meta Muse Spark 1.3 / Muse Glimmer 30B স্বয়ংক্রিয় কৃষি ডিসিশন এজেন্ট</span>
+          </h3>
+          <p class="text-xs text-slate-400 mt-1">
+            লাইভ Open-Meteo আবহাওয়া + রাসায়নিক শোষণ সময় (Rainfastness) + কৃষকের ঘরের স্টক হিসাব করে চূড়ান্ত সিদ্ধান্ত তৈরি করে।
+          </p>
+        </div>
+
+        <button onclick="triggerAgentRun()" id="btn-run-agent" class="px-5 py-2.5 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/30 transition flex items-center gap-2">
+          <i data-lucide="play" class="w-4 h-4"></i>
+          <span>এজেন্ট চালান (Run Muse Spark Agent)</span>
+        </button>
+      </div>
+
+      <!-- Live Weather Timeline Card (Open-Meteo) -->
+      <div class="glass-card p-5 rounded-2xl">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-sm font-bold text-white flex items-center gap-2">
+            <i data-lucide="cloud-rain" class="w-4 h-4 text-cyan-400"></i>
+            <span>আত্রাই, নওগাঁ — লাইভ প্রতি ঘণ্টার আবহাওয়া পূর্বাভাস (Open-Meteo API)</span>
+          </h4>
+          <span class="text-xs font-mono text-cyan-400 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800">
+            আজ সন্ধ্যা ৭:০০টায় ভারী বৃষ্টি (২২ মিমি)
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 text-xs">
+          <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <span class="text-slate-400 font-mono">13:00</span>
+            <div class="text-amber-400 font-bold my-1 text-sm">৩১.২°C</div>
+            <span class="text-[10px] text-emerald-400 font-semibold">রোদ / শুষ্ক (৪ ঘণ্টা উইন্ডো)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <span class="text-slate-400 font-mono">14:00</span>
+            <div class="text-amber-400 font-bold my-1 text-sm">৩১.৮°C</div>
+            <span class="text-[10px] text-emerald-400 font-semibold">রোদ (শোষণ উপযোগী)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <span class="text-slate-400 font-mono">15:00</span>
+            <div class="text-amber-400 font-bold my-1 text-sm">৩২.০°C</div>
+            <span class="text-[10px] text-emerald-400 font-semibold">শোষণ সম্পন্ন (২.৫ ঘণ্টা)</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <span class="text-slate-400 font-mono">16:00</span>
+            <div class="text-slate-300 font-bold my-1 text-sm">৩১.০°C</div>
+            <span class="text-[10px] text-slate-400">আংশিক মেঘলা</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <span class="text-slate-400 font-mono">17:00</span>
+            <div class="text-slate-300 font-bold my-1 text-sm">২৯.৫°C</div>
+            <span class="text-[10px] text-slate-400">বাতাসের আর্দ্রতা ৭৬%</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-center">
+            <span class="text-slate-400 font-mono">18:00</span>
+            <div class="text-blue-300 font-bold my-1 text-sm">২৭.৮°C</div>
+            <span class="text-[10px] text-blue-400">হালকা বাতাস / গুঁড়ি বৃষ্টি</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-blue-950/50 border border-blue-700 text-center">
+            <span class="text-blue-300 font-mono font-bold">19:00</span>
+            <div class="text-blue-200 font-black my-1 text-sm">২৫.৪°C</div>
+            <span class="text-[10px] text-blue-400 font-bold">২২ মিমি ভারী বৃষ্টি</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Side-by-Side: Naive Rule Engine vs Muse Spark 1.3 -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Red Card: Naive Rule Failure -->
+        <div class="glass-card p-5 rounded-2xl border-rose-900/50 bg-rose-950/20">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-bold text-rose-300 flex items-center gap-2">
+              <i data-lucide="x-circle" class="w-4 h-4 text-rose-400"></i>
+              <span>সাধারণ কোড / ইফ-এলস নিয়ম (Naive Rule - Fails)</span>
+            </h4>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-900/80 text-rose-200">ফসলের মারাত্মক ক্ষতি</span>
+          </div>
+          
+          <div class="p-3 rounded-xl bg-slate-950/70 border border-rose-900/40 text-xs font-mono text-rose-300 leading-relaxed mb-3">
+            IF rain_within_12h > 5mm: CANCEL_ALL_SPRAY()
+            <br><br>
+            🚨 সিদ্ধান্ত: "আজ সন্ধ্যা ৭টায় বৃষ্টি হবে, তাই জমিতে কোনো স্প্রে বা সার দেওয়া যাবে না। সব কাজ বাতিল।"
+          </div>
+
+          <div class="text-xs text-rose-200 space-y-1.5">
+            <p><strong>কেন এটি ব্যর্থ?</strong> ব্লাস্ট ছত্রাক বৃষ্টির পর ৯০%+ আর্দ্রতায় রাতারাতি পুরো জমিতে ছড়িয়ে পড়ে। ওষুধ না দেওয়ায় ধানের শিষ নষ্ট হয়ে ৬৫% পর্যন্ত ফসল সম্পূর্ণ বিনষ্ট হতো।</p>
+          </div>
+        </div>
+
+        <!-- Green Card: Muse Spark 1.3 Reasoning Victory -->
+        <div class="glass-card p-5 rounded-2xl border-emerald-900/50 bg-emerald-950/20">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-bold text-emerald-300 flex items-center gap-2">
+              <i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i>
+              <span>Meta Muse Spark 1.3 এজেন্ট (ফসল রক্ষা ও সাশ্রয়)</span>
+            </h4>
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-900/80 text-emerald-200">স্মার্ট সিদ্ধান্ত</span>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-950/70 border border-emerald-900/40 text-xs font-mono text-emerald-300 leading-relaxed mb-3">
+            ✅ সিদ্ধান্ত: "ইউরিয়া বাতিল (৪৮ ঘণ্টা শোষণকাল নেই); কিন্তু দুপুর ১টায় ঘরে থাকা ট্রাইসাইক্লাজোল দিয়ে উত্তর-পূর্ব কোণায় জরুরি স্পট-স্প্রে সম্পন্ন করুন।"
+          </div>
+
+          <div class="text-xs text-emerald-200 space-y-1.5">
+            <p><strong>কেন এটি সফল?</strong> ট্রাইসাইক্লাজোল গাছে শোষিত হতে মাত্র ২.৫ ঘণ্টা লাগে, আর বৃষ্টির আগে এখনো ৪ ঘণ্টা রোদ আছে। তাই ওষুধ ধুয়ে যাবে না, রোগ ঠেকানো যাবে এবং ইউরিয়া নষ্ট হওয়া বাঁচবে!</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Agent Tool Execution Trace Console -->
+      <div class="glass-card p-5 rounded-2xl">
+        <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-3">
+          <i data-lucide="terminal" class="w-4 h-4 text-slate-400"></i>
+          <span>Muse Spark 1.3 স্বয়ংক্রিয় টুল কলিং লগ ও রিজনিং ট্রেস (Terminal Trace)</span>
+        </h4>
+        <div id="agent-trace-log" class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-emerald-400 space-y-2 max-h-64 overflow-y-auto">
+          <div class="text-slate-400">// এজেন্ট প্রস্তুত। 'Run Muse Spark Agent' চাপলে লাইভ টুল ইনভোকেশন এখানে দৃশ্যমান হবে...</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 3: BENGALI VOICE & AUTONOMOUS TELEGRAM ALERT -->
+    <!-- ========================================================================= -->
+    <section id="voice-panel" class="hidden space-y-6">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left Column: Bengali Voice Assistant (MMS-TTS-BEN + Muse Transcribe) -->
+        <div class="lg:col-span-7 space-y-6">
+          <div class="glass-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+                <span>Meta facebook/mms-tts-ben ডায়নামিক বাংলা ভয়েস প্লেয়ার</span>
+              </h3>
+              <span class="text-xs font-mono text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">16-bit PCM WAV</span>
+            </div>
+
+            <p class="text-xs text-slate-300 mb-3">
+              এজেন্টের নেওয়া সিদ্ধান্ত অনুযায়ী স্বয়ংক্রিয়ভাবে কৃষকের জন্য বাংলায় তৈরি হওয়া অডিও বার্তা শুনুন:
+            </p>
+
+            <!-- Audio Player -->
+            <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-4">
+              <audio id="audio-player" controls class="w-full h-10 accent-emerald-500 rounded-lg">
+                <source id="audio-source" src="" type="audio/wav">
+                আপনার ব্রাউজার অডিও সাপোর্ট করে না।
+              </audio>
+            </div>
+
+            <!-- Voice Script Display -->
+            <div class="mt-4 p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+              <span class="text-slate-400 font-semibold block mb-1">অডিওর মূল কথামালা (Transcript):</span>
+              <p id="voice-transcript-text" class="text-slate-200 leading-relaxed">
+                "আসসালামু আলাইকুম রহিম ভাই। আজ সন্ধ্যা ৭টায় আত্রাই এলাকায় ২২ মিলিমিটার বৃষ্টি হবে। ইউরিয়া সার দেওয়া বন্ধ রাখুন, কিন্তু ঘরে থাকা ওষুধ দিয়ে দুপুর ১টায় উত্তর-পূর্ব কোণায় স্পট-স্প্রে সম্পন্ন করুন।"
+              </p>
+            </div>
+          </div>
+
+          <!-- Interactive Farmer Voice Q&A Box -->
+          <div class="glass-card p-5 rounded-2xl">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2 mb-2">
+              <i data-lucide="mic" class="w-4 h-4 text-blue-400"></i>
+              <span>কৃষকের ভয়েস প্রশ্ন (muse-voice-transcribe-1.0)</span>
+            </h3>
+            <p class="text-xs text-slate-400 mb-4">
+              কৃষক মুখে বাংলায় প্রশ্ন করলে মডেল তা টেক্সটে রূপান্তর করে উত্তর বাংলা অডিওতে ফিরিয়ে দেবে।
+            </p>
+
+            <div class="flex gap-2">
+              <input type="text" id="voice-question-input" placeholder="যেমন: আমার ধানের পাতায় বাদামী দাগ, আজ কি সার দেব?" class="flex-1 px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-blue-500">
+              <button onclick="askVoiceQuestion()" class="px-4 py-2.5 rounded-xl text-sm font-bold bg-blue-600 hover:bg-blue-500 text-white flex items-center gap-2">
+                <i data-lucide="send" class="w-4 h-4"></i>
+                <span>জিজ্ঞেস করুন</span>
+              </button>
+            </div>
+
+            <div id="voice-reply-card" class="hidden mt-4 p-4 rounded-xl bg-blue-950/40 border border-blue-800 text-xs space-y-2">
+              <div class="font-bold text-blue-300">কৃষক-বন্ধু এআই উত্তর:</div>
+              <p id="voice-reply-text" class="text-slate-200 leading-relaxed"></p>
+              <audio id="reply-audio-player" controls class="w-full h-8 mt-2"></audio>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Simulated Mobile Telegram Screen -->
+        <div class="lg:col-span-5">
+          <div class="glass-card p-5 rounded-3xl border-slate-800 flex flex-col items-center">
+            <div class="w-full max-w-sm rounded-[36px] bg-slate-950 border-4 border-slate-800 p-3 shadow-2xl relative">
+              
+              <!-- Phone Notch -->
+              <div class="w-28 h-4 bg-slate-900 rounded-full mx-auto mb-3"></div>
+
+              <!-- Telegram Header -->
+              <div class="flex items-center gap-3 pb-3 border-b border-slate-800">
+                <div class="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                  KB
+                </div>
+                <div>
+                  <div class="text-xs font-bold text-white flex items-center gap-1.5">
+                    <span>Krishok-Bondhu Bot</span>
+                    <i data-lucide="badge-check" class="w-3.5 h-3.5 text-blue-400"></i>
+                  </div>
+                  <span class="text-[10px] text-emerald-400">bot &bull; field alert active</span>
+                </div>
+              </div>
+
+              <!-- Telegram Message Bubble -->
+              <div class="mt-4 space-y-3">
+                <div class="p-3 rounded-2xl rounded-tl-sm bg-slate-900 border border-slate-800 text-xs text-slate-200 space-y-2">
+                  <div class="w-full aspect-video rounded-lg overflow-hidden bg-slate-950">
+                    <img id="tg-preview-img" src="/assets/sample_leaves/rice_blast_leaf.jpg" alt="Telegram Image Attachment" class="w-full h-full object-cover">
+                  </div>
+                  
+                  <div class="p-2 rounded-xl bg-slate-800/80 flex items-center gap-2">
+                    <button class="w-7 h-7 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center flex-shrink-0">
+                      <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+                    </button>
+                    <div class="flex-1">
+                      <div class="h-1.5 bg-slate-700 rounded-full overflow-hidden">
+                        <div class="w-2/3 h-full bg-emerald-400"></div>
+                      </div>
+                      <span class="text-[9px] text-slate-400 mt-0.5 block">alert_voice.wav (0:14)</span>
+                    </div>
+                  </div>
+
+                  <p id="tg-text-preview" class="text-[11px] leading-relaxed text-slate-300">
+                    🌾 রহিম ভাই, আজ সন্ধ্যা ৭টায় বৃষ্টি হবে। ইউরিয়া সার দেওয়া বন্ধ রাখুন, কিন্তু ঘরে থাকা ওষুধ দিয়ে দুপুর ১টায় উত্তর-পূর্ব কোণায় মাত্র ২৮ গ্রাম স্পট-স্প্রে করুন।
+                  </p>
+                  <span class="text-[9px] text-slate-400 block text-right">13:02 &bull; Delivered ✓✓</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 4: FIELD & NATIONAL ECOSYSTEM HUB -->
+    <!-- ========================================================================= -->
+    <section id="panel-ecosystem" class="hidden space-y-6">
+      
+      <!-- Top Row: Lifecycle Tracker & Human Action Checklist -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Lifecycle Progress (Day 28) -->
+        <div class="lg:col-span-6 glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="calendar" class="w-4 h-4 text-emerald-400"></i>
+              <span>৯০ দিনের ডায়নামিক ক্রপ লাইফসাইকেল ট্র্যাকার</span>
+            </h3>
+            <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800">
+              Day 28 of 145
+            </span>
+          </div>
+
+          <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 mb-4">
+            <div class="flex justify-between text-xs font-semibold mb-1.5">
+              <span class="text-slate-300">বর্তমান পর্যায়: টিলারিং পর্যায় (Active Tillering)</span>
+              <span class="text-emerald-400">১৯.৩% সম্পন্ন</span>
+            </div>
+            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
+              <div class="w-[19.3%] h-full bg-emerald-500 rounded-full"></div>
+            </div>
+            <div class="flex justify-between text-[10px] text-slate-400 mt-2">
+              <span>রোপণ: ২৮ দিন আগে</span>
+              <span>কাইচ থোড়: আর ১৩ দিন পর</span>
+              <span>কর্তন: ১১৭ দিন পর</span>
+            </div>
+          </div>
+
+          <!-- 30% Human Action Checklist -->
+          <div>
+            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i data-lucide="check-square" class="w-3.5 h-3.5 text-blue-400"></i>
+              <span>কৃষকের দৈনন্দিন ৩০% হিউম্যান অ্যাকশন চেকলিস্ট:</span>
+            </h4>
+            <div id="human-tasks-list" class="space-y-2 text-xs">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Human-in-the-Loop Agronomist Verification Queue -->
+        <div class="lg:col-span-6 glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="shield-check" class="w-4 h-4 text-purple-400"></i>
+              <span>কৃষি কর্মকর্তা ভেরিফিকেশন কিউ (Human-in-the-Loop Queue)</span>
+            </h3>
+            <span id="queue-badge" class="text-xs font-bold px-2.5 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800">
+              ১টি রিভিউ অপেক্ষমাণ
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-400 mb-3">
+            যেসব স্ক্যানে কনফিডেন্স &lt;৮৫% অথবা রোগের তীব্রতা Grade 7+ হয়, সেগুলো উপজেলা কৃষি অফিসারের অনুমোদনের জন্য এখানে জমা থাকে।
+          </p>
+
+          <div id="agronomist-tickets-container" class="space-y-3">
+            <!-- Dynamically populated tickets -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Row: 64-District Spatial Arbitrage & QR Passport -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- 64-District Spatial Arbitrage & 1000-Bag Virtual Lot -->
+        <div class="lg:col-span-8 glass-card p-5 rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i>
+              <span>৬৪ জেলা স্পেশিয়াল আর্বিট্রেজ ও ১,০০০ বস্তা ভার্চুয়াল ট্রাক পুলিং</span>
+            </h3>
+            <span class="text-xs font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">
+              নওগাঁ লোকাল দর: ১,১৪০ ৳/মণ
+            </span>
+          </div>
+
+          <!-- Virtual Truck Progress -->
+          <div class="p-4 rounded-xl bg-gradient-to-r from-blue-950/60 to-slate-900 border border-blue-800/60 mb-4">
+            <div class="flex justify-between items-center text-xs mb-2">
+              <span class="font-bold text-blue-300 flex items-center gap-1.5">
+                <i data-lucide="truck" class="w-4 h-4 text-blue-400"></i>
+                <span>শেয়ার্ড ১৫-টন ট্রাক পুলিং (চট্টগ্রাম পাহাড়তলী মোকাম):</span>
+              </span>
+              <span class="font-mono text-emerald-400 font-bold">৭৪০ / ১,০০০ বস্তা (৭৪%)</span>
+            </div>
+            <div class="w-full h-3 bg-slate-950 rounded-full overflow-hidden border border-slate-800">
+              <div class="w-[74%] h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full"></div>
+            </div>
+            <div class="flex justify-between text-[11px] text-slate-300 mt-2">
+              <span>রহিম ভাই দিয়েছেন: <strong>৬০ বস্তা</strong></span>
+              <span>আর বাকি: <strong>২৬০ বস্তা</strong></span>
+              <span class="text-emerald-400 font-bold">অতিরিক্ত নিট লাভ: ৳১১,০৫২ টাকা</span>
+            </div>
+          </div>
+
+          <!-- Arbitrage Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-900 text-slate-400 border-b border-slate-800">
+                <tr>
+                  <th class="p-2.5">গন্তব্য জেলা ও পাইকারি মোকাম</th>
+                  <th class="p-2.5">দূরত্ব</th>
+                  <th class="p-2.5">বাজারদর (মণ)</th>
+                  <th class="p-2.5">ট্রাক ভাড়া (বস্তা)</th>
+                  <th class="p-2.5 text-right font-bold text-emerald-400">নিট অতিরিক্ত লাভ (মণ)</th>
+                  <th class="p-2.5 text-center">সুপারিশ</th>
+                </tr>
+              </thead>
+              <tbody id="arbitrage-tbody" class="divide-y divide-slate-800 text-slate-300">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Digital Export & Traceability QR Passport -->
+        <div class="lg:col-span-4 glass-card p-5 rounded-2xl flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
+                <span>ডিজিটাল এক্সপোর্ট ট্রেসেবিলিটি QR পাসপোর্ট</span>
+              </h3>
+              <span class="text-[10px] font-mono text-emerald-300 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">SHA-256</span>
+            </div>
+
+            <p class="text-xs text-slate-400 mb-4">
+              ৭৯.৫% রাসায়নিক সাশ্রয় করে উৎপাদিত বিষমুক্ত ফসলের গ্লোবাল গ্যাপ কমপ্লায়েন্ট ভেরিফিকেশন।
+            </p>
+
+            <div class="flex justify-center my-3">
+              <div class="p-3 bg-white rounded-2xl shadow-lg shadow-emerald-950/50">
+                <img id="qr-passport-img" src="" alt="QR Passport" class="w-36 h-36">
+              </div>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono space-y-1">
+              <div class="text-slate-400 text-[10px]">Verification Signature:</div>
+              <div id="qr-hash-display" class="text-emerald-400 font-bold break-all text-[11px]">391846c035ca074f...</div>
+              <div class="text-[10px] text-slate-400 mt-1">MRL Status: <strong>PASSED (Clean Export)</strong></div>
+            </div>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-slate-800 text-center">
+            <span class="text-[10px] text-slate-400">আন্তর্জাতিক বায়ার বা খাদ্য অধিদপ্তরের জন্য উন্মুক্ত ভেরিফিকেশন</span>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-4 text-center text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-between items-center gap-2">
+      <p>Krishok-Bondhu &bull; Meta AI Global Hackathon &bull; Build for Your World</p>
+      <p class="font-mono text-slate-400">Version 2.0.0 &bull; Atrai, Naogaon Field Node</p>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab Switching
+    function switchTab(tabId) {
+      const tabs = ['vision', 'agent', 'voice', 'ecosystem'];
+      tabs.forEach(t => {
+        const panel = document.getElementById(t === 'voice' ? 'voice-panel' : `panel-${t}`);
+        const btn = document.getElementById(`tab-${t}`);
+        if (t === tabId) {
+          panel.classList.remove('hidden');
+          btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 bg-brand-600 text-white shadow-md shadow-brand-600/30 transition";
+        } else {
+          panel.classList.add('hidden');
+          btn.className = "tab-btn px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 text-slate-400 hover:text-white hover:bg-slate-800/60 transition";
+        }
+      });
+      lucide.createIcons();
+      if (tabId === 'ecosystem') loadEcosystem();
+    }
+
+    // Load Leaf Sample
+    async function loadSample(sampleName) {
+      const loader = document.getElementById('vision-loading');
+      loader.classList.remove('hidden');
+      
+      const formData = new FormData();
+      formData.append('sample_filename', sampleName);
+      formData.append('plot_id', '1');
+
+      try {
+        const resp = await fetch('/api/scan-leaf', { method: 'POST', body: formData });
+        const data = await resp.json();
+        updateVisionUI(data);
+      } catch (err) {
+        console.error('Scan error:', err);
+      } finally {
+        loader.classList.add('hidden');
+      }
+    }
+
+    // Handle Custom File Upload
+    async function handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const loader = document.getElementById('vision-loading');
+      loader.classList.remove('hidden');
+
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('plot_id', '1');
+
+      try {
+        const resp = await fetch('/api/scan-leaf', { method: 'POST', body: formData });
+        const data = await resp.json();
+        updateVisionUI(data);
+      } catch (err) {
+        console.error('Upload error:', err);
+      } finally {
+        loader.classList.add('hidden');
+      }
+    }
+
+    // Update Vision Panel UI Elements
+    function updateVisionUI(data) {
+      document.getElementById('leaf-display-img').src = data.annotated_image_base64;
+      document.getElementById('stat-dla').innerText = `${data.dla_percent}%`;
+      document.getElementById('stat-grade').innerText = `Grade ${data.irri_grade}`;
+      document.getElementById('stat-conf').innerText = `${(data.confidence * 100).toFixed(1)}%`;
+      document.getElementById('stat-iou').innerText = data.iou_score.toFixed(2);
+      document.getElementById('scan-badge').innerText = `${data.disease_class} | SES Grade ${data.irri_grade}`;
+
+      // Quadrants
+      const q = data.quadrant_distribution || {};
+      document.getElementById('quad-nw').innerText = `${q['North-West'] || 0}%`;
+      document.getElementById('quad-ne').innerText = `${q['North-East'] || 0}%`;
+      document.getElementById('quad-sw').innerText = `${q['South-West'] || 0}%`;
+      document.getElementById('quad-se').innerText = `${q['South-East'] || 0}%`;
+      document.getElementById('hotspot-label').innerText = `Hotspot: ${data.hotspot_quadrant} (${q[data.hotspot_quadrant] || 0}%)`;
+
+      // Dosage
+      const d = data.dosage || {};
+      document.getElementById('stat-action').innerText = d.action_type || 'NORMAL';
+      document.getElementById('stat-dose').innerText = `${d.krishok_spot_dose_g}g (${data.hotspot_quadrant} কোণা)`;
+      document.getElementById('stat-saved-pct').innerText = `${d.chemical_saved_percent}% সাশ্রয়`;
+      document.getElementById('stat-saved-bdt').innerText = `৳${d.cost_saved_bdt} টাকা`;
+      document.getElementById('stat-advisory').innerText = d.cultural_advisory_bn || '';
+
+      // Safety Lock Check
+      const lockBanner = document.getElementById('safety-lock-banner');
+      if (data.safety_locked) {
+        lockBanner.classList.remove('hidden');
+      } else {
+        lockBanner.classList.add('hidden');
+      }
+      lucide.createIcons();
+    }
+
+    // Trigger Muse Spark Agent
+    async function triggerAgentRun() {
+      const btn = document.getElementById('btn-run-agent');
+      const traceLog = document.getElementById('agent-trace-log');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>এজেন্ট ভাবছে...</span>`;
+      
+      traceLog.innerHTML = `<div class="text-blue-400">> [Init]: Muse Spark 1.3 multi-constraint loop initialized...</div>`;
+
+      try {
+        const resp = await fetch('/api/run-agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ plot_id: 1 })
+        });
+        const data = await resp.json();
+        const dec = data.decision;
+
+        // Render Tool Trace
+        traceLog.innerHTML = '';
+        dec.tool_trace.forEach(step => {
+          traceLog.innerHTML += `
+            <div class="pb-2 border-b border-slate-900">
+              <span class="text-blue-400 font-bold">Step ${step.step} Tool Call:</span> 
+              <span class="text-yellow-300 font-mono">${step.tool}()</span>
+              <div class="text-slate-400 text-[11px] mt-0.5">Input: ${JSON.stringify(step.input)}</div>
+              <div class="text-emerald-300 text-[11px] mt-0.5">Output: ${JSON.stringify(step.output)}</div>
+            </div>
+          `;
+        });
+        traceLog.innerHTML += `
+          <div class="pt-2 text-emerald-400 font-bold">
+            ✓ Final Action Synthesized: ADVANCE_SPOT_SPRAY_1PM (Urea Canceled)
+          </div>
+        `;
+
+        // Update Audio Player and Telegram Previews
+        const audioUrl = data.audio_file_url;
+        const player = document.getElementById('audio-player');
+        document.getElementById('audio-source').src = audioUrl;
+        player.load();
+
+        document.getElementById('voice-transcript-text').innerText = dec.bangla_voice_text;
+        document.getElementById('tg-text-preview').innerText = dec.bangla_voice_text;
+
+        // Alert user of completion
+        btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>সিদ্ধান্ত সম্পন্ন!</span>`;
+        setTimeout(() => {
+          btn.disabled = false;
+          btn.innerHTML = `<i data-lucide="play" class="w-4 h-4"></i><span>এজেন্ট চালান (Run Muse Spark Agent)</span>`;
+          lucide.createIcons();
+        }, 3000);
+
+      } catch (err) {
+        console.error('Agent error:', err);
+        btn.disabled = false;
+        btn.innerText = 'ত্রুটি ঘটেছে, পুনরায় চেষ্টা করুন';
+      }
+    }
+
+    // Ask Voice Question
+    async function askVoiceQuestion() {
+      const input = document.getElementById('voice-question-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      try {
+        const resp = await fetch('/api/voice-ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question_text: text, plot_id: 1 })
+        });
+        const data = await resp.json();
+
+        const card = document.getElementById('voice-reply-card');
+        card.classList.remove('hidden');
+        document.getElementById('voice-reply-text').innerText = data.agent_reply_bn;
+        
+        const replyPlayer = document.getElementById('reply-audio-player');
+        replyPlayer.src = data.audio_wav_url;
+        replyPlayer.play();
+      } catch (err) {
+        console.error('Voice ask error:', err);
+      }
+    }
+
+    // Load Ecosystem Hub
+    async function loadEcosystem() {
+      try {
+        const resp = await fetch('/api/ecosystem?plot_id=1');
+        const data = await resp.json();
+
+        // 1. Human Tasks
+        const tasksContainer = document.getElementById('human-tasks-list');
+        tasksContainer.innerHTML = '';
+        data.lifecycle.human_action_checklist.forEach(t => {
+          tasksContainer.innerHTML += `
+            <div class="p-2.5 rounded-lg bg-slate-900 border border-slate-800 flex items-start gap-2.5">
+              <input type="checkbox" ${t.completed ? 'checked' : ''} class="mt-0.5 rounded text-emerald-500 focus:ring-0">
+              <div class="flex-1">
+                <span class="text-slate-200 ${t.completed ? 'line-through text-slate-500' : ''}">${t.task_bn}</span>
+                <span class="block text-[10px] text-slate-400 mt-0.5">${t.required_time}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        // 2. Agronomist Tickets
+        const ticketsContainer = document.getElementById('agronomist-tickets-container');
+        ticketsContainer.innerHTML = '';
+        data.agronomist_queue.forEach(t => {
+          const isPending = t.status === 'PENDING_HUMAN_REVIEW';
+          ticketsContainer.innerHTML += `
+            <div class="p-3.5 rounded-xl bg-slate-900 border ${isPending ? 'border-purple-800/80 bg-purple-950/20' : 'border-slate-800'} text-xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="font-bold text-slate-200">Ticket #${t.ticket_id}: ${t.disease_class}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isPending ? 'bg-purple-900 text-purple-200' : 'bg-emerald-900 text-emerald-200'}">${t.status}</span>
+              </div>
+              <p class="text-slate-400 text-[11px] mb-2">${t.reason}</p>
+              ${isPending ? `
+                <div class="flex gap-2">
+                  <button onclick="resolveTicket(${t.ticket_id}, 'approve')" class="px-3 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px]">১-ক্লিক অ্যাপ্রুভ</button>
+                  <button onclick="resolveTicket(${t.ticket_id}, 'reject')" class="px-3 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-[11px]">বাতিল / রিস্যাম্পল</button>
+                </div>
+              ` : `
+                <div class="text-[10px] text-emerald-400">অফিসার মন্তব্য: ${t.officer_notes || 'অনুমোদিত'}</div>
+              `}
+            </div>
+          `;
+        });
+
+        // 3. Arbitrage Table
+        const tbody = document.getElementById('arbitrage-tbody');
+        tbody.innerHTML = '';
+        data.spatial_arbitrage.arbitrage_opportunities.forEach(arb => {
+          const isTop = arb.recommendation === 'TOP_RECOMMENDED';
+          tbody.innerHTML += `
+            <tr class="${isTop ? 'bg-emerald-950/20 font-semibold' : ''}">
+              <td class="p-2.5">${arb.district} (${arb.hub})</td>
+              <td class="p-2.5 font-mono">${arb.distance_km} km</td>
+              <td class="p-2.5 font-mono">৳${arb.wholesale_price_maund}</td>
+              <td class="p-2.5 font-mono">৳${arb.truck_freight_bag}</td>
+              <td class="p-2.5 text-right font-mono font-bold text-emerald-400">+৳${arb.net_extra_profit_per_maund}</td>
+              <td class="p-2.5 text-center">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${isTop ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-300'}">
+                  ${isTop ? 'টপ চয়েস' : 'উপযোগী'}
+                </span>
+              </td>
+            </tr>
+          `;
+        });
+
+        // 4. QR Passport
+        document.getElementById('qr-passport-img').src = data.export_qr_passport.qr_code_base64;
+        document.getElementById('qr-hash-display').innerText = data.export_qr_passport.verification_hash;
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error('Ecosystem error:', err);
+      }
+    }
+
+    // Resolve Agronomist Ticket
+    async function resolveTicket(ticketId, action) {
+      try {
+        await fetch('/api/agronomist/review', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ticket_id: ticketId, action: action })
+        });
+        loadEcosystem();
+      } catch (err) {
+        console.error('Review error:', err);
+      }
+    }
+
+    // Initial load
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSample('rice_blast_leaf.jpg');
+    });
+  </script>
+</body>
+</html>
